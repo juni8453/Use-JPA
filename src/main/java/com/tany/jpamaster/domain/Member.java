@@ -1,5 +1,7 @@
 package com.tany.jpamaster.domain;
 
+import com.tany.jpamaster.domain.dto.response.MemberResponse;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,4 +26,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
+
+    public MemberResponse toDto() {
+        return new MemberResponse(id, name, address);
+    }
 }

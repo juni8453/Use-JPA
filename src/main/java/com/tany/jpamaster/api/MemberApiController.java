@@ -1,15 +1,18 @@
 package com.tany.jpamaster.api;
 
 import com.tany.jpamaster.domain.Member;
+import com.tany.jpamaster.domain.dto.request.CreateMemberRequest;
+import com.tany.jpamaster.domain.dto.request.UpdateMemberRequest;
+import com.tany.jpamaster.domain.dto.response.*;
 import com.tany.jpamaster.service.MemberService;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,6 +34,7 @@ public class MemberApiController {
         // 해당 Entity 의 빌더 생성자나 정적 팩토리 메서드를 통해 Entity 를 만들고 DB 에 저장해야 한다. (예제니까 패스)
         Member member = new Member();
         member.setName(request.getName());
+        member.setAddress(request.getAddress());
         Long id = memberService.join(member);
 
         return new CreateMemberResponse(id);
@@ -49,26 +53,15 @@ public class MemberApiController {
         return new UpdateMemberResponse(findMember.getId(), findMember.getName());
     }
 
-    @Data
-    @AllArgsConstructor
-    static class CreateMemberResponse {
-        private Long id;
+    @GetMapping("/api/v1/members")
+    public List<Member> memberV1() {
+        return memberService.findMembers();
     }
 
-    @Data
-    static class CreateMemberRequest {
-        private String name;
-    }
+    @GetMapping("/api/v3/members")
+    public GlobalResponse<MembersResponse> memberV3() {
+        MembersResponse findMembers = memberService.getMembers();
 
-    @Data
-    @AllArgsConstructor
-    static class UpdateMemberResponse {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    static class UpdateMemberRequest {
-        private String name;
+        return new GlobalResponse<>(1, findMembers);
     }
 }
