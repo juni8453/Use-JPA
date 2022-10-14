@@ -70,5 +70,18 @@ public class OrderSimpleApiController {
         return new GlobalResponse<>(1, dtos);
     }
 
+    // Fetch Join 으로 @xToOne 성능 최적화
+    // Order 의 지연 로딩 상태인 Member 와 Delivery 를 Fetch Join 으로 무시하고 한번에 땡겨올 수 있다.
+    // 따라서 이 경우는 프록시가 아닌 진짜 객체에 값을 몽땅 채워서 값을 가져온다 !
+    // 1 + N(4번) 총 5번 나가던 쿼리가 1번으로 줄었다 ..
+    @GetMapping("/api/v4/simple-orders")
+    public GlobalResponse<List<SimpleOrderDto>> ordersV4() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
 
+        List<SimpleOrderDto> dtos = orders.stream()
+            .map(Order::toDto)
+            .collect(Collectors.toList());
+
+        return new GlobalResponse<>(1, dtos);
+    }
 }
