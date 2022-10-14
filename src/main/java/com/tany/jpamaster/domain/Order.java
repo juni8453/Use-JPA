@@ -1,5 +1,6 @@
 package com.tany.jpamaster.domain;
 
+import com.tany.jpamaster.domain.dto.response.SimpleOrderDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,6 +54,11 @@ public class Order {
         }
 
         return order;
+    }
+
+    // member.getName(), delivery.getAddress() 호출 시 지연 로딩 초기화 발생
+    public SimpleOrderDto toDto() {
+        return new SimpleOrderDto(id, member.getName(), orderDate, status, delivery.getAddress());
     }
 
 
