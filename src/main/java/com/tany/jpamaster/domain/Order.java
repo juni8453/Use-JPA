@@ -1,5 +1,7 @@
 package com.tany.jpamaster.domain;
 
+import com.tany.jpamaster.domain.dto.response.OrderDto;
+import com.tany.jpamaster.domain.dto.response.OrderItemDto;
 import com.tany.jpamaster.domain.dto.response.SimpleOrderDto;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,8 +11,10 @@ import lombok.Setter;
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -57,10 +61,19 @@ public class Order {
     }
 
     // member.getName(), delivery.getAddress() 호출 시 지연 로딩 초기화 발생
-    public SimpleOrderDto toDto() {
+    public SimpleOrderDto toSimpleOrderDto() {
         return new SimpleOrderDto(id, member.getName(), orderDate, status, delivery.getAddress());
     }
 
+    public OrderDto toOrderDto(Order order) {
+
+        // OrderItem 또한 Entity 이기 떄문에 그대로 반환하지 않고 DTO 로 변환 후 반환하는 로직 추가.
+        List<OrderItemDto> orderItemDtos = order.getOrderItems().stream()
+            .map(orderItem -> new OrderItemDto(orderItem.getItem().getName(), orderItem.getOrderPrice(), orderItem.getCount()))
+            .collect(Collectors.toList());
+
+        return new OrderDto(id, member.getName(), orderDate, status, delivery.getAddress(), orderItemDtos);
+    }
 
     //==비즈니스 로직==//
 
