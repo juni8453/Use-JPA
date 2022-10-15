@@ -47,7 +47,7 @@ public class OrderSimpleApiController {
         // 즉, 2번 루프가 돌아야하기 때문에 총 5번의 쿼리가 실행되는 문제 발생 (N + 1)
         // ORDER 조회 시 + N(회원 2번 + 배송 2번) 만큼 쿼리가 추가 실행되기 떄문.
         List<SimpleOrderDto> dtos = orders.stream()
-            .map(Order::toDto)
+            .map(Order::toSimpleOrderDto)
             .collect(Collectors.toList());
 
         return dtos;
@@ -64,7 +64,7 @@ public class OrderSimpleApiController {
         // (위의 예시대로라면 최초 A ORDER 조회 시 영속성 컨텍스트에 값이 저장되고 이후에는 영속성 컨텍스트에서 Member, Delivery 를 가져가므로)
         // 대부분의 경우 다른 유저도 주문을 하기 때문에 거의 N + 1 문제가 터진다고 보면 된다.
         List<SimpleOrderDto> dtos = orderRepository.findAll().stream()
-            .map(Order::toDto)
+            .map(Order::toSimpleOrderDto)
             .collect(Collectors.toList());
 
         return new GlobalResponse<>(1, dtos);
@@ -79,7 +79,7 @@ public class OrderSimpleApiController {
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
 
         List<SimpleOrderDto> dtos = orders.stream()
-            .map(Order::toDto)
+            .map(Order::toSimpleOrderDto)
             .collect(Collectors.toList());
 
         return new GlobalResponse<>(1, dtos);
